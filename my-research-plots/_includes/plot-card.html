@@ -1,0 +1,21 @@
+<div class="plot-card">
+    <a href="/{{ plot.collection }}/{{ plot.slug }}/">
+        {% if plot.plot_image %}
+            <img src="/{{ plot.collection }}/{{ plot.slug }}/{{ plot.plot_image }}" alt="{{ plot.title }}" class="plot-image">
+        {% endif %}
+        <h3 class="plot-title">{{ plot.title }}</h3>
+    </a>
+    <div class="plot-meta">
+        <span class="date">{{ plot.date|dateformat('%b %d, %Y') }}</span>
+        {% if plot.author %}
+            <span class="author">by {{ plot.author }}</span>
+        {% endif %}
+    </div>
+    {% if plot.tags %}
+        <div class="plot-tags">
+            {% for tag in plot.tags %}
+                <span class="tag">{{ tag }}</span>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
