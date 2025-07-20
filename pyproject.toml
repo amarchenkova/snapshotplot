@@ -7,7 +7,7 @@ name = "snapshotplot"
 version = "0.1.0"
 description = "Capture Python code, Matplotlib plots, and HTML documentation in one step"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [
     {name = "Anastasia Marchenkova", email = "hello@amarchenkova.com"}
@@ -19,19 +19,22 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Visualization",
     "Topic :: Software Development :: Documentation",
 ]
 
 dependencies = [
-    "matplotlib>=3.5.0",
-    "jinja2>=3.0.0",
-    "pygments>=2.10.0",
+    "matplotlib>=3.7.0",
+    "jinja2>=3.1.0",
+    "pygments>=2.15.0",
+    "click>=8.0.0",
+    "pyyaml>=6.0.0",
+    "markdown>=3.4.0",
 ]
 
 [project.optional-dependencies]
@@ -48,6 +51,9 @@ Homepage = "https://github.com/yourusername/snapshotplot"
 Repository = "https://github.com/yourusername/snapshotplot"
 Documentation = "https://your-docs-url"
 Issues = "https://github.com/yourusername/snapshotplot/issues"
+
+[project.scripts]
+snapshotplot = "snapshotplot.cli:cli"
 
 [tool.setuptools.packages.find]
 where = ["."]

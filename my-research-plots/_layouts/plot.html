@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ plot.title }} - {{ site.title }}</title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    {% include 'header.html' %}
+    
+    <main class="container">
+        <article class="plot-detail">
+            <header class="plot-header">
+                <h1>{{ plot.title }}</h1>
+                <div class="plot-meta">
+                    <span class="date">{{ plot.date|dateformat }}</span>
+                    {% if plot.author %}
+                        <span class="author">by {{ plot.author }}</span>
+                    {% endif %}
+                    <span class="collection">in <a href="/{{ plot.collection }}/">{{ plot.collection }}</a></span>
+                </div>
+                {% if plot.tags %}
+                    <div class="plot-tags">
+                        {% for tag in plot.tags %}
+                            <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </header>
+            
+            {% if plot.description %}
+                <div class="plot-description">
+                    <p>{{ plot.description }}</p>
+                </div>
+            {% endif %}
+            
+            {% if plot.plot_image %}
+                <div class="plot-image-container">
+                    <img src="{{ plot.plot_image }}" alt="{{ plot.title }}" class="plot-image-full">
+                </div>
+            {% endif %}
+            
+            {% if plot.code_content %}
+                <div class="code-section">
+                    <h3>Source Code</h3>
+                    <pre><code class="language-python">{{ plot.code_content }}</code></pre>
+                </div>
+            {% endif %}
+            
+            {% if plot.content %}
+                <div class="plot-content">
+                    {{ plot.content|safe }}
+                </div>
+            {% endif %}
+            
+            <div class="plot-actions">
+                <a href="/{{ plot.collection }}/" class="btn-secondary">← Back to {{ plot.collection }}</a>
+                {% if plot.code_file %}
+                    <a href="{{ plot.code_file }}" class="btn-primary" download>Download Code</a>
+                {% endif %}
+            </div>
+        </article>
+    </main>
+    
+    {% include 'footer.html' %}
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html>
