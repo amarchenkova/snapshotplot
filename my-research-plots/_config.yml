@@ -1,0 +1,18 @@
+author: Data Science Team
+build_dir: docs
+collections:
+  experiments:
+    description: Machine learning experiments and analysis
+    output: true
+    title: ML Experiments
+  visualizations:
+    description: General data visualization examples
+    output: true
+    title: Data Visualizations
+defaults:
+  author: Data Science Team
+  layout: plot
+description: Data science plots and analysis for my-research-plots
+github_repo: null
+template: scientific
+title: SnapshotPlot

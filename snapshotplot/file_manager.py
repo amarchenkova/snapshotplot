@@ -107,7 +107,7 @@ def get_relative_path(file_path: str, base_dir: str) -> str:
 
 def sanitize_filename(filename: str) -> str:
     """
-    Sanitize a filename to be safe for filesystem.
+    Sanitize a filename to be safe for filesystem and URLs.
     
     Args:
         filename: Original filename
@@ -119,6 +119,9 @@ def sanitize_filename(filename: str) -> str:
     invalid_chars = '<>:"/\\|?*'
     for char in invalid_chars:
         filename = filename.replace(char, '_')
+    
+    # Replace spaces with dashes for URL-friendly names
+    filename = filename.replace(' ', '-')
     
     # Remove leading/trailing spaces and dots
     filename = filename.strip(' .')

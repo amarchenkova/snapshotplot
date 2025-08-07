@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }} - {{ site.title }}</title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css">
+</head>
+<body>
+    {% include 'header.html' %}
+    
+    <main class="container">
+        {% if is_index %}
+            <section class="hero">
+                <h1>{{ site.title }}</h1>
+                <p>{{ site.description }}</p>
+            </section>
+            
+            <section class="recent-plots">
+                <h2>Recent Plots</h2>
+                <div class="plot-grid">
+                    {% for plot in plots %}
+                        {% include 'plot-card.html' %}
+                    {% endfor %}
+                </div>
+            </section>
+            
+            <section class="collections">
+                <h2>Collections</h2>
+                <div class="collection-grid">
+                    {% for collection_name, collection_plots in collections.items() %}
+                        <div class="collection-card">
+                            <h3><a href="/{{ collection_name }}/">{{ collection_name|title }}</a></h3>
+                            <p>{{ collection_plots|length }} plots</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% else %}
+            {{ content }}
+        {% endif %}
+    </main>
+    
+    {% include 'footer.html' %}
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>
+</body>
+</html>

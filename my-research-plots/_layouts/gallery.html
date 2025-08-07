@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }} - {{ site.title }}</title>
+    <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+    {% include 'header.html' %}
+    
+    <main class="container">
+        <div class="collection-header">
+            <h1>{{ collection.title }}</h1>
+            <p>{{ collection.description }}</p>
+        </div>
+        
+        <div class="plot-grid">
+            {% for plot in plots %}
+                {% include 'plot-card.html' %}
+            {% endfor %}
+        </div>
+    </main>
+    
+    {% include 'footer.html' %}
+</body>
+</html>

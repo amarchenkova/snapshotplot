@@ -39,7 +39,15 @@ class SnapshotContext:
         author: Optional[str] = None,
         notes: Optional[str] = None,
         dpi: int = 300,
-        bbox_inches: str = 'tight'
+        bbox_inches: str = 'tight',
+        # Site generator options
+        site: Optional[str] = None,
+        collection: Optional[str] = None,
+        tags: Optional[list] = None,
+        description: Optional[str] = None,
+        auto_commit: bool = False,
+        auto_build: bool = False,
+        auto_deploy: bool = False
     ):
         """
         Initialize the snapshot context manager.
@@ -51,6 +59,13 @@ class SnapshotContext:
             notes: Additional notes for the snapshot
             dpi: DPI for saved plots
             bbox_inches: Bounding box setting for plots
+            site: Site directory for static site generation
+            collection: Collection name for organizing plots
+            tags: List of tags for categorizing plots
+            description: Description for the plot
+            auto_commit: Automatically commit to git after snapshot
+            auto_build: Automatically build static site after snapshot
+            auto_deploy: Automatically deploy site after snapshot
         """
         self.config = {
             'output_dir': output_dir,
@@ -58,7 +73,14 @@ class SnapshotContext:
             'author': author,
             'notes': notes,
             'dpi': dpi,
-            'bbox_inches': bbox_inches
+            'bbox_inches': bbox_inches,
+            'site': site,
+            'collection': collection,
+            'tags': tags or [],
+            'description': description,
+            'auto_commit': auto_commit,
+            'auto_build': auto_build,
+            'auto_deploy': auto_deploy
         }
         
         # Validate and merge with defaults
@@ -116,6 +138,21 @@ class SnapshotContext:
         
         # Create HTML documentation
         self._create_html_documentation(plot_saved)
+        
+        # Handle site generation if configured
+        if self.config.get('site') or self.config.get('collection'):
+            self._handle_site_generation()
+        
+        # Handle git operations
+        if self.config.get('auto_commit'):
+            self._auto_commit()
+        
+        # Handle site building/deployment
+        if self.config.get('auto_build'):
+            self._auto_build()
+        
+        if self.config.get('auto_deploy'):
+            self._auto_deploy()
     
     def _save_source_code(self):
         """Save the source code to a file."""
@@ -167,6 +204,108 @@ class SnapshotContext:
         except Exception as e:
             import warnings
             warnings.warn(f"Failed to create HTML documentation: {e}")
+    
+    def _handle_site_generation(self):
+        """Handle site generation integration."""
+        try:
+            import os
+            import yaml
+            from datetime import datetime
+            from pathlib import Path
+            
+            # Determine site directory
+            site_dir = self.config.get('site', '.')
+            collection = self.config.get('collection', 'plots')
+            
+            site_path = Path(site_dir)
+            config_path = site_path / '_config.yml'
+            
+            # Check if this is a site directory
+            if not config_path.exists():
+                import warnings
+                warnings.warn(f"Site directory {site_dir} doesn't contain _config.yml. Skipping site generation.")
+                return
+            
+            # Create collection directory structure
+            collection_dir = site_path / 'collections' / collection
+            collection_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Create plot directory with timestamp
+            plot_dir = collection_dir / f"{self.timestamp}_{sanitize_filename(self.config.get('title', 'plot'))}"
+            plot_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Copy files to site structure
+            import shutil
+            
+            # Copy plot image
+            if os.path.exists(self.file_paths['plot']):
+                shutil.copy2(self.file_paths['plot'], plot_dir / 'plot.png')
+            
+            # Copy source code
+            if os.path.exists(self.file_paths['code']):
+                shutil.copy2(self.file_paths['code'], plot_dir / 'code.py')
+            
+            # Create plot metadata file
+            metadata = {
+                'title': self.config.get('title') or self.calling_info['function_name'],
+                'date': datetime.now().isoformat(),
+                'author': self.config.get('author'),
+                'description': self.config.get('description'),
+                'tags': self.config.get('tags', []),
+                'plot_image': 'plot.png',
+                'code_file': 'code.py',
+                'function_name': self.calling_info['function_name'],
+                'filename': self.calling_info['filename']
+            }
+            
+            # Remove None values
+            metadata = {k: v for k, v in metadata.items() if v is not None}
+            
+            with open(plot_dir / 'index.md', 'w') as f:
+                f.write('---\n')
+                yaml.dump(metadata, f, default_flow_style=False)
+                f.write('---\n\n')
+                if self.config.get('description'):
+                    f.write(f"{self.config['description']}\n\n")
+                f.write(f"Generated from `{self.calling_info['function_name']}` in `{self.calling_info['filename']}`\n")
+            
+        except Exception as e:
+            import warnings
+            warnings.warn(f"Failed to handle site generation: {e}")
+    
+    def _auto_commit(self):
+        """Automatically commit changes to git."""
+        try:
+            import subprocess
+            subprocess.run(['git', 'add', '.'], cwd=self.config.get('site', '.'), check=True)
+            commit_msg = f"Add plot: {self.config.get('title', 'Unnamed plot')}"
+            subprocess.run(['git', 'commit', '-m', commit_msg], cwd=self.config.get('site', '.'), check=True)
+        except Exception as e:
+            import warnings
+            warnings.warn(f"Failed to auto-commit: {e}")
+    
+    def _auto_build(self):
+        """Automatically build the static site."""
+        try:
+            from .site_generator import SiteGenerator
+            site_dir = self.config.get('site', '.')
+            generator = SiteGenerator(site_dir)
+            generator.build()
+        except Exception as e:
+            import warnings
+            warnings.warn(f"Failed to auto-build site: {e}")
+    
+    def _auto_deploy(self):
+        """Automatically deploy the site."""
+        try:
+            import subprocess
+            site_dir = self.config.get('site', '.')
+            subprocess.run(['git', 'add', 'docs/'], cwd=site_dir, check=True)
+            subprocess.run(['git', 'commit', '-m', 'Deploy site'], cwd=site_dir, check=True)
+            subprocess.run(['git', 'push'], cwd=site_dir, check=True)
+        except Exception as e:
+            import warnings
+            warnings.warn(f"Failed to auto-deploy: {e}")
 
 
 class SnapshotDecorator:
@@ -179,7 +318,15 @@ class SnapshotDecorator:
         author: Optional[str] = None,
         notes: Optional[str] = None,
         dpi: int = 300,
-        bbox_inches: str = 'tight'
+        bbox_inches: str = 'tight',
+        # Site generator options
+        site: Optional[str] = None,
+        collection: Optional[str] = None,
+        tags: Optional[list] = None,
+        description: Optional[str] = None,
+        auto_commit: bool = False,
+        auto_build: bool = False,
+        auto_deploy: bool = False
     ):
         """Initialize the decorator with configuration."""
         self.config = {
@@ -188,7 +335,14 @@ class SnapshotDecorator:
             'author': author,
             'notes': notes,
             'dpi': dpi,
-            'bbox_inches': bbox_inches
+            'bbox_inches': bbox_inches,
+            'site': site,
+            'collection': collection,
+            'tags': tags or [],
+            'description': description,
+            'auto_commit': auto_commit,
+            'auto_build': auto_build,
+            'auto_deploy': auto_deploy
         }
     
     def __call__(self, func: Callable) -> Callable:
@@ -219,7 +373,15 @@ def snapshot(
     author: Optional[str] = None,
     notes: Optional[str] = None,
     dpi: int = 300,
-    bbox_inches: str = 'tight'
+    bbox_inches: str = 'tight',
+    # Site generator options
+    site: Optional[str] = None,
+    collection: Optional[str] = None,
+    tags: Optional[list] = None,
+    description: Optional[str] = None,
+    auto_commit: bool = False,
+    auto_build: bool = False,
+    auto_deploy: bool = False
 ) -> Union[SnapshotDecorator, Callable]:
     """
     Create a snapshot decorator or context manager.
@@ -252,7 +414,14 @@ def snapshot(
         author=author,
         notes=notes,
         dpi=dpi,
-        bbox_inches=bbox_inches
+        bbox_inches=bbox_inches,
+        site=site,
+        collection=collection,
+        tags=tags,
+        description=description,
+        auto_commit=auto_commit,
+        auto_build=auto_build,
+        auto_deploy=auto_deploy
     )
 
 
