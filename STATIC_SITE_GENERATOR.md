@@ -100,8 +100,7 @@ snapshotplot deploy --push
 # List all plots
 snapshotplot list --collection experiments
 
-# Search plots
-snapshotplot search --tag regression --author john
+# Search by tag/author is planned; for now, filter via the website or tooling
 ```
 
 ## Workflow Examples
@@ -197,6 +196,7 @@ jobs:
 - Print-friendly styles
 
 ### Minimal Theme
+Note: Not yet implemented; the default theme is 'scientific'.
 - Simple, distraction-free design
 - Fast loading
 - Mobile-optimized
@@ -255,7 +255,7 @@ function_name: "feature_analysis"
 - **By author** - Team member contributions
 - **By date** - Recent or historical analysis
 
-### Export Options
+### Export Options (planned)
 - **PDF** - For presentations and reports
 - **Markdown** - For documentation
 - **JSON** - For programmatic access
@@ -373,6 +373,8 @@ research-project/
 4. **Tags** for releases/milestones
 
 ## Performance
+
+Note: The following items are planned improvements; current builds are full rebuilds without caching or incremental processing.
 
 ### Build Speed
 - **Incremental builds** - Only changed plots

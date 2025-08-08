@@ -29,7 +29,7 @@ class TestTimestamp:
         assert timestamp1 == timestamp2
         
         # Timestamp should have correct format
-        assert len(timestamp1) == 20  # YYYYMMDD_HHMMSS_microseconds
+        assert len(timestamp1) == 19  # YYYYMMDD_HHMMSS_milliseconds (3 digits)
         assert timestamp1[8] == '_'
         assert timestamp1[15] == '_'
     
@@ -93,9 +93,9 @@ class TestFileManager:
             assert path_type in paths
         
         # Should have correct filenames
-        assert paths['code'].endswith(f"code_{timestamp}.py")
-        assert paths['plot'].endswith(f"plot_{timestamp}.png")
-        assert paths['html'].endswith(f"snapshot_{timestamp}.html")
+        assert paths['code'].endswith(f"{timestamp}_code.py")
+        assert paths['plot'].endswith(f"{timestamp}_plot.png")
+        assert paths['html'].endswith(f"{timestamp}_snapshot.html")
 
 
 class TestSnapshotContext:

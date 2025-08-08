@@ -13,19 +13,31 @@ from typing import Optional
 _GLOBAL_TIMESTAMP: Optional[str] = None
 _GLOBAL_DATETIME: Optional[datetime] = None
 
+# Track the last emitted timestamp string to ensure monotonicity across calls
+_LAST_EMITTED_TIMESTAMP: Optional[str] = None
+
 
 def generate_timestamp() -> str:
     """
     Generate a new UTC timestamp for the current snapshot run.
     Returns:
-        str: Timestamp in format YYYYMMDD_HHMMSS_microseconds
+        str: Timestamp in format YYYYMMDD_HHMMSS_milliseconds (3 digits)
     """
-    global _GLOBAL_TIMESTAMP, _GLOBAL_DATETIME
-    dt = datetime.now(timezone.utc)
-    timestamp = dt.strftime("%Y%m%d_%H%M%S_%f")[:-3]  # Remove last 3 digits of microseconds
-    _GLOBAL_TIMESTAMP = timestamp
+    global _GLOBAL_TIMESTAMP, _GLOBAL_DATETIME, _LAST_EMITTED_TIMESTAMP
+
+    # Ensure uniqueness at millisecond precision
+    while True:
+        dt = datetime.now(timezone.utc)
+        candidate = dt.strftime("%Y%m%d_%H%M%S_%f")[:-3]  # Trim to milliseconds
+        if candidate != _LAST_EMITTED_TIMESTAMP:
+            break
+        # Wait for the next millisecond to avoid duplicates
+        time.sleep(0.001)
+
+    _GLOBAL_TIMESTAMP = candidate
     _GLOBAL_DATETIME = dt
-    return timestamp
+    _LAST_EMITTED_TIMESTAMP = candidate
+    return candidate
 
 
 def get_current_timestamp() -> str:

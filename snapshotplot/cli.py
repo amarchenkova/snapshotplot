@@ -327,9 +327,6 @@ def _create_assets(site_path: Path):
     
     with open(site_path / 'assets' / 'style.css', 'w') as f:
         f.write(css)
-    
-    with open(site_path / 'assets' / 'style.css', 'w') as f:
-        f.write(css)
 
 
 if __name__ == '__main__':

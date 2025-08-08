@@ -111,7 +111,6 @@ The output includes:
 ```python
 @snapshot(
     output_dir="my_snapshots",      # Custom output directory
-    code_format="html",            # Code format in HTML
     title="My Analysis",           # Custom title for HTML
     author="Data Scientist",       # Author metadata
     notes="Important findings"     # Additional notes
@@ -203,7 +202,9 @@ plt.colorbar(label='Cluster')
 plt.show()
 ```
 
-#### Line Magic (`%snapshot`)
+#### Line Magic (`%snapshot`) [experimental]
+
+Note: line magic support is experimental; prefer using the cell magic `%%snapshot` until it's finalized.
 
 Capture the previous cell's output - useful for retroactive documentation:
 
@@ -419,10 +420,13 @@ else:
 
 ## Requirements
 
-- Python 3.8+
-- matplotlib >= 3.5.0
-- jinja2 >= 3.0.0
-- pygments >= 2.10.0
+- Python 3.9+
+- matplotlib >= 3.7.0
+- jinja2 >= 3.1.0
+- pygments >= 2.15.0
+- click >= 8.0.0
+- pyyaml >= 6.0.0
+- markdown >= 3.4.0
 
 ## Development
 

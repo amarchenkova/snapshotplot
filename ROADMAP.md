@@ -33,7 +33,13 @@ Update to leverage newer features and security fixes:
 - `jinja2>=3.1.0` (current: `>=3.0.0`)
 - `pygments>=2.15.0` (current: `>=2.10.0`)
 
-### 3. Code Modernization
+### 3. Test and Docs Alignment
+**Priority**: High
+**Files**: `tests/test_snapshot.py`, `README.md`
+- Align snapshot filename convention between tests and implementation
+- Update README to mark `%snapshot` line magic as experimental or implement it
+
+### 4. Code Modernization
 
 #### Path Handling Modernization
 **Priority**: High

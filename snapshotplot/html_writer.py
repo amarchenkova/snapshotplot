@@ -10,7 +10,7 @@ from typing import Dict, Any, Optional
 from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
-from jinja2 import Template
+from jinja2 import Environment, BaseLoader
 
 
 # HTML template with dark mode and side-by-side layout
@@ -284,8 +284,9 @@ def generate_html(
         'highlighted_code': highlight_code(code)
     }
     
-    # Render template
-    template = Template(HTML_TEMPLATE)
+    # Render template with autoescape for safety
+    env = Environment(loader=BaseLoader(), autoescape=True)
+    template = env.from_string(HTML_TEMPLATE)
     return template.render(**template_vars)
 
 
